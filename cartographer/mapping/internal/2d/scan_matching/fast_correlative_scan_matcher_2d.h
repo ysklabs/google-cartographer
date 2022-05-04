@@ -48,6 +48,7 @@ CreateFastCorrelativeScanMatcherOptions2D(
 // y0 <= y < y0.
 class PrecomputationGrid2D {
  public:
+  PrecomputationGrid2D(const Grid2D& grid, const CellLimits& limits);
   PrecomputationGrid2D(const Grid2D& grid, const CellLimits& limits, int width,
                        std::vector<float>* reusable_intermediate_grid);
 

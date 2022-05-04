@@ -88,6 +88,23 @@ CreateFastCorrelativeScanMatcherOptions2D(
   return options;
 }
 
+PrecomputationGrid2D::PrecomputationGrid2D(const Grid2D& grid,
+                                           const CellLimits& limits)
+    : offset_(0, 0),
+      wide_limits_(limits.num_x_cells, limits.num_y_cells),
+      min_score_(1.f - grid.GetMaxCorrespondenceCost()),
+      max_score_(1.f - grid.GetMinCorrespondenceCost()),
+      cells_(wide_limits_.num_x_cells * wide_limits_.num_y_cells) {
+  const int stride = wide_limits_.num_x_cells;
+  for (int x = 0; x != wide_limits_.num_x_cells; ++x) {
+    for (int y = 0; y != wide_limits_.num_y_cells; ++y) {
+      double probability =
+          1.f - std::abs(grid.GetCorrespondenceCost(Eigen::Array2i(x, y)));
+      cells_[x + (y + width - 1) * stride] = ComputeCellValue(probability);
+    }
+  }
+}
+
 PrecomputationGrid2D::PrecomputationGrid2D(
     const Grid2D& grid, const CellLimits& limits, const int width,
     std::vector<float>* reusable_intermediate_grid)
